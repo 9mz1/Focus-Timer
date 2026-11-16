@@ -86,6 +86,7 @@ function finishSession() {
     remainingSeconds = 0;
     timerState = "idle";
     document.title = "Focus - Session Ended";
+    changeFavicon('./assets/focuslogo48.png');
     startButton.textContent = "Start Again";
     renderTime(remainingSeconds);
     renderControls();
@@ -117,6 +118,7 @@ function startTimer() {
     startButton.textContent = "Start Focus";
     renderControls();
     document.title = "Focus - Session Running";
+    changeFavicon('./assets/focuslogo48green.png');
     pauseHint.hidden = false;
     updateTimer();
     timerInterval = window.setInterval(updateTimer, 250);
@@ -134,6 +136,7 @@ function pauseTimer() {
         renderControls();
         pauseHint.hidden = true;
         document.title = "Focus - Session Paused";
+        changeFavicon('./assets/focuslogo48yellow.png');
     }
 }
 
@@ -148,6 +151,7 @@ function resumeTimer() {
     document.title = "Focus - Session Running";
     pauseHint.hidden = false;
     timerInterval = window.setInterval(updateTimer, 250);
+    changeFavicon('./assets/focuslogo48green.png');
 }
 
 function stopSession() {
@@ -158,6 +162,7 @@ function stopSession() {
     renderTime(remainingSeconds);
     renderControls();
     document.title = "Focus";
+    changeFavicon('./assets/focuslogo.svg');
 }
 
 function stopSound() {
@@ -179,6 +184,16 @@ function openDurationForm() {
     durationForm.hidden = false;
     hoursInput.focus();
     hoursInput.select();
+}
+
+function changeFavicon(iconUrl) {
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = iconUrl;
 }
 
 timerDisplay.addEventListener("click", () => {
