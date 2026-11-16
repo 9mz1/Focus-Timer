@@ -6,6 +6,9 @@ const startButton = document.querySelector("#startButton");
 const resumeButton = document.querySelector("#resumeButton");
 const stopButton = document.querySelector("#stopButton");
 const shortcutsButton = document.querySelector("#shortcutsButton");
+const modesContainer = document.querySelector(".modes");
+const focusModeButton = document.querySelector("#focus");
+const timeModeButton = document.querySelector("#time");
 const shortcutsDialog = document.querySelector("#shortcutsDialog");
 const pauseHint = document.querySelector("#pauseHint");
 const tags = document.querySelectorAll(".tag");
@@ -20,7 +23,9 @@ let configuredDuration = defaultDuration;
 let remainingSeconds = defaultDuration;
 let endTime = 0;
 let timerInterval = null;
+let clockInterval = null;
 let timerState = "idle";
+let currentMode = "focus";
 
 function formatTime(value) {
     return String(value).padStart(2, "0");
@@ -36,15 +41,41 @@ function renderTime(totalSeconds) {
     secondsDisplay.textContent = formatTime(seconds);
 }
 
+function renderClock() {
+    const now = new Date();
+    hoursDisplay.textContent = formatTime(now.getHours());
+    minutesDisplay.textContent = formatTime(now.getMinutes());
+    secondsDisplay.textContent = formatTime(now.getSeconds());
+}
+
+function renderMode() {
+    const isTimeMode = currentMode === "time";
+    focusModeButton.classList.toggle("active", !isTimeMode);
+    timeModeButton.classList.toggle("active", isTimeMode);
+    document.body.classList.toggle("time-mode", isTimeMode);
+
+    if (isTimeMode) {
+        renderClock();
+        if (clockInterval === null) {
+            clockInterval = window.setInterval(renderClock, 1000);
+        }
+    } else if (clockInterval !== null) {
+        window.clearInterval(clockInterval);
+        clockInterval = null;
+        renderTime(remainingSeconds);
+    }
+}
+
 function renderControls() {
     const isPaused = timerState === "paused";
     const isActive = timerState === "running" || isPaused;
 
-    startButton.hidden = isActive;
+    startButton.hidden = isActive || currentMode === "time";
     shortcutsButton.hidden = isActive;
     resumeButton.hidden = !isPaused;
     stopButton.hidden = !isPaused;
     durationForm.hidden = true;
+    modesContainer.hidden = isActive;
     // pauseHint.hidden = timerState !== "running";
     document.body.classList.toggle("session-running", isActive);
     document.body.classList.toggle("session-paused", isPaused);
@@ -117,6 +148,7 @@ function startTimer() {
     timerState = "running";
     startButton.textContent = "Start Focus";
     renderControls();
+    pauseHint.textContent = "Click anywhere to pause";
     document.title = "Focus - Session Running";
     changeFavicon('./assets/focuslogo48green.png');
     pauseHint.hidden = false;
@@ -161,6 +193,8 @@ function stopSession() {
     startButton.textContent = "Start Focus";
     renderTime(remainingSeconds);
     renderControls();
+    pauseHint.hidden = false;
+    pauseHint.textContent = "Click on timer to change duration | Hover over Category to select";
     document.title = "Focus";
     changeFavicon('./assets/focuslogo48.png');
 }
@@ -168,8 +202,18 @@ function stopSession() {
 function stopSound() {
     endSound.pause();
     endSound.currentTime = 0;
-    pauseHint.hidden = true;
-    pauseHint.textContent = "Click anywhere to pause";
+    pauseHint.hidden = false;
+    pauseHint.textContent = "Click on timer to change duration | Hover over Category to select";
+}
+
+function setMode(mode) {
+    if (mode === currentMode) {
+        return;
+    }
+
+    currentMode = mode;
+    renderMode();
+    renderControls();
 }
 
 function toggleShortcuts() {
@@ -246,6 +290,12 @@ document.addEventListener("keydown", (event) => {
         return;
     }
 
+    if (key === "w") {
+        event.preventDefault();
+        setMode(currentMode === "focus" ? "time" : "focus");
+        return;
+    }
+
     if (key === "t") {
         event.preventDefault();
         openDurationForm();
@@ -279,6 +329,8 @@ document.addEventListener("keydown", (event) => {
 startButton.addEventListener("click", startTimer);
 resumeButton.addEventListener("click", resumeTimer);
 stopButton.addEventListener("click", stopSession);
+focusModeButton.addEventListener("click", () => setMode("focus"));
+timeModeButton.addEventListener("click", () => setMode("time"));
 
 tags.forEach((tag) => {
     tag.setAttribute("aria-pressed", String(tag.classList.contains("selected")));
@@ -307,6 +359,7 @@ shortcutsButton.addEventListener("click", () => {
 })
 
 renderTime(remainingSeconds);
+renderMode();
 renderControls();
 applyOrder();
 
@@ -315,3 +368,15 @@ if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js");
     });
 }
+
+self.addEventListener("fetch", (e) => {
+  e.respondWith(
+    fetch(e.request)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
+});

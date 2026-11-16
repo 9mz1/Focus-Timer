@@ -12,6 +12,10 @@
 </head>
 <body>
     <div class="top">
+        <div class="modes">
+            <button class="mode active" id="focus">Focus</button>
+            <button class="mode" id="time">Time</button>
+        </div>
         <div class="timer" id="timerDisplay" role="button" tabindex="0" aria-label="Set session duration">
             <span id="hrs">00</span>:<span id="mins">00</span>:<span id="secs">00</span>
         </div>
@@ -46,12 +50,13 @@
         <button id="stopButton" type="button" hidden>Stop Session</button>
         <button id="resumeButton" type="button" hidden>Resume</button>
     </div>
-    <p id="pauseHint" hidden>Click anywhere to pause</p>
+    <p id="pauseHint">Click on timer to change duration | Hover over Category to select</p>
 
     <dialog id="shortcutsDialog">
         <h1>Shortcuts</h1>
         <ul class="down">
             <li><kbd>/</kbd>Show & Hide Shortcuts</li>
+            <li><kbd>W</kbd>Toggle Mode</li>
             <li><kbd>T</kbd>Set duration</li>
             <li><kbd>SPACE</kbd>Start, Pause, Resume session</li>
             <li><kbd>Q</kbd>Stop session</li>
