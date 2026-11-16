@@ -1,2 +1,2 @@
 # Focus-Timer
-A timer webapp to help get things done
+A focus timer to help you get things done.
