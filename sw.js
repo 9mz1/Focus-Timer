@@ -1,4 +1,4 @@
-const CACHE = "focus-timer-v1";
+const CACHE = "focus-timer-v2";
 const FILES = [
   "./",
   "./index.html",
@@ -11,7 +11,8 @@ const FILES = [
   "./assets/focuslogo48green.png",
   "./assets/focuslogo48yellow.png",
   "./assets/icon-192.png",
-  "./assets/icon-512.png"
+  "./assets/icon-512.png",
+  "./assets/Inter-Variable.ttf"
 ];
 
 self.addEventListener("install", (e) => {
