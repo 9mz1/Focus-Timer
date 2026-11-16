@@ -5,6 +5,8 @@ const minutesInput = document.querySelector("#minutesInput");
 const startButton = document.querySelector("#startButton");
 const resumeButton = document.querySelector("#resumeButton");
 const stopButton = document.querySelector("#stopButton");
+const shortcutsButton = document.querySelector("#shortcutsButton");
+const shortcutsDialog = document.querySelector("#shortcutsDialog");
 const pauseHint = document.querySelector("#pauseHint");
 const tags = document.querySelectorAll(".tag");
 const tagOrder = Array.from(tags);
@@ -39,6 +41,7 @@ function renderControls() {
     const isActive = timerState === "running" || isPaused;
 
     startButton.hidden = isActive;
+    shortcutsButton.hidden = isActive;
     resumeButton.hidden = !isPaused;
     stopButton.hidden = !isPaused;
     durationForm.hidden = true;
@@ -90,7 +93,7 @@ function finishSession() {
     endSound.volume = 1.0;
     endSound.loop = true;
     endSound.play();
-    pauseHint.textContent = "Click anywhere to stop the sound";
+    pauseHint.textContent = "Click anywhere or press press 'space' to stop the sound";
     pauseHint.hidden = false;
 }
 
@@ -164,6 +167,20 @@ function stopSound() {
     pauseHint.textContent = "Click anywhere to pause";
 }
 
+function toggleShortcuts() {
+    shortcutsDialog.classList.toggle("isOpen");
+}
+
+function openDurationForm() {
+    if (timerState !== "idle") {
+        return;
+    }
+
+    durationForm.hidden = false;
+    hoursInput.focus();
+    hoursInput.select();
+}
+
 timerDisplay.addEventListener("click", () => {
     if (timerState !== "idle") {
         return;
@@ -201,17 +218,52 @@ durationForm.addEventListener("submit", (event) => {
     renderControls();
 });
 
+document.addEventListener("keydown", (event) => {
+    if (event.target instanceof HTMLElement
+        && event.target.matches("input, textarea, select, button, [role='button'], [contenteditable='true']")) {
+        return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === "/") {
+        event.preventDefault();
+        toggleShortcuts();
+        return;
+    }
+
+    if (key === "t") {
+        event.preventDefault();
+        openDurationForm();
+        return;
+    }
+
+    if (key === "q") {
+        event.preventDefault();
+        if (!endSound.paused) {
+            stopSound();
+        } else if (timerState !== "idle") {
+            stopSession();
+        }
+        return;
+    }
+
+    if (event.code === "Space") {
+        event.preventDefault();
+        if (!endSound.paused) {
+            stopSound();
+        } else if (timerState === "idle") {
+            startTimer();
+        } else if (timerState === "running") {
+            pauseTimer();
+        } else {
+            resumeTimer();
+        }
+    }
+});
+
 startButton.addEventListener("click", startTimer);
 resumeButton.addEventListener("click", resumeTimer);
 stopButton.addEventListener("click", stopSession);
-
-document.addEventListener("keydown", (event) => {
-    if (event.code === "Space" && event.target instanceof HTMLElement
-        && !event.target.matches("input, button")) {
-        event.preventDefault();
-        pauseTimer();
-    }
-});
 
 tags.forEach((tag) => {
     tag.setAttribute("aria-pressed", String(tag.classList.contains("selected")));
@@ -234,6 +286,10 @@ document.addEventListener("click", (event) => {
         stopSound();
     }
 });
+
+shortcutsButton.addEventListener("click", () => {
+    toggleShortcuts();
+})
 
 renderTime(remainingSeconds);
 renderControls();
