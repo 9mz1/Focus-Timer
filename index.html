@@ -7,7 +7,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="top">
+        <div class="timer" id="timerDisplay" role="button" tabindex="0" aria-label="Set session duration">
+            <span id="hrs">00</span>:<span id="mins">00</span>:<span id="secs">00</span>
+        </div>
+
+        <div class="tag">Work</div>
+    </div>
     
+    <form id="durationForm" class="duration-form" hidden>
+        <label>
+            Hours
+            <input id="hrsInput" type="number" min="0" max="99" value="0" required>
+        </label>
+        <label>
+            Minutes
+            <input id="minutesInput" type="number" min="0" max="59" value="25" required>
+        </label>
+        <button type="submit">Set duration</button>
+    </form>
+
+    <div id="sessionControls">
+        <button id="startButton" type="button">Start Focus</button>
+        <button id="stopButton" type="button" hidden>Stop Session</button>
+        <button id="resumeButton" type="button" hidden>Resume</button>
+    </div>
+    <p id="pauseHint" hidden>Click anywhere to pause</p>
     <script src="app.js"></script>
 </body>
 </html>
