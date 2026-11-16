@@ -6,9 +6,12 @@ const startButton = document.querySelector("#startButton");
 const resumeButton = document.querySelector("#resumeButton");
 const stopButton = document.querySelector("#stopButton");
 const pauseHint = document.querySelector("#pauseHint");
+const tags = document.querySelectorAll(".tag");
+const tagOrder = Array.from(tags);
 const hoursDisplay = document.querySelector("#hrs");
 const minutesDisplay = document.querySelector("#mins");
 const secondsDisplay = document.querySelector("#secs");
+const endSound = new Audio("./assets/endSound.wav");
 
 const defaultDuration = 25 * 60;
 let configuredDuration = defaultDuration;
@@ -39,8 +42,33 @@ function renderControls() {
     resumeButton.hidden = !isPaused;
     stopButton.hidden = !isPaused;
     durationForm.hidden = true;
-    pauseHint.hidden = timerState !== "running";
+    // pauseHint.hidden = timerState !== "running";
     document.body.classList.toggle("session-running", isActive);
+    document.body.classList.toggle("session-paused", isPaused);
+}
+
+function applyOrder() {
+    tagOrder.forEach((tag, index) => {
+        tag.dataset.pos = index;
+    });
+}
+
+function selectTag(tag) {
+    if (timerState !== "idle") {
+        return;
+    }
+
+    const selectedIndex = tagOrder.findIndex((t) => t.classList.contains("selected"));
+    const newIndex = tagOrder.indexOf(tag);
+    if (selectedIndex !== newIndex) {
+        [tagOrder[selectedIndex], tagOrder[newIndex]] = [tagOrder[newIndex], tagOrder[selectedIndex]];
+    }
+
+    applyOrder();
+    tagOrder.forEach((t) => {
+        t.classList.toggle("selected", t === tag);
+        t.setAttribute("aria-pressed", String(t === tag));
+    });
 }
 
 function stopInterval() {   
@@ -54,10 +82,16 @@ function finishSession() {
     stopInterval();
     remainingSeconds = 0;
     timerState = "idle";
+    document.title = "Focus - Session Ended";
     startButton.textContent = "Start Again";
     renderTime(remainingSeconds);
     renderControls();
-
+    endSound.currentTime = 0;
+    endSound.volume = 1.0;
+    endSound.loop = true;
+    endSound.play();
+    pauseHint.textContent = "Click anywhere to stop the sound";
+    pauseHint.hidden = false;
 }
 
 function updateTimer() {
@@ -79,6 +113,8 @@ function startTimer() {
     timerState = "running";
     startButton.textContent = "Start Focus";
     renderControls();
+    document.title = "Focus - Session Running";
+    pauseHint.hidden = false;
     updateTimer();
     timerInterval = window.setInterval(updateTimer, 250);
 }
@@ -93,6 +129,8 @@ function pauseTimer() {
         stopInterval();
         timerState = "paused";
         renderControls();
+        pauseHint.hidden = true;
+        document.title = "Focus - Session Paused";
     }
 }
 
@@ -104,6 +142,8 @@ function resumeTimer() {
     endTime = Date.now() + remainingSeconds * 1000;
     timerState = "running";
     renderControls();
+    document.title = "Focus - Session Running";
+    pauseHint.hidden = false;
     timerInterval = window.setInterval(updateTimer, 250);
 }
 
@@ -114,6 +154,14 @@ function stopSession() {
     startButton.textContent = "Start Focus";
     renderTime(remainingSeconds);
     renderControls();
+    document.title = "Focus";
+}
+
+function stopSound() {
+    endSound.pause();
+    endSound.currentTime = 0;
+    pauseHint.hidden = true;
+    pauseHint.textContent = "Click anywhere to pause";
 }
 
 timerDisplay.addEventListener("click", () => {
@@ -165,13 +213,28 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+tags.forEach((tag) => {
+    tag.setAttribute("aria-pressed", String(tag.classList.contains("selected")));
+    tag.addEventListener("click", () => selectTag(tag));
+    tag.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectTag(tag);
+        }
+    });
+});
+
 document.addEventListener("click", (event) => {
     if (event.target instanceof Element && event.target.closest("button, input, form")) {
         return;
     }
 
     pauseTimer();
+    if (!endSound.paused) {
+        stopSound();
+    }
 });
 
 renderTime(remainingSeconds);
 renderControls();
+applyOrder();

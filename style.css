@@ -6,6 +6,7 @@
     --secbg-color: #000000;
     --green-color: #4ADE80;
     --red-color: #FB7185;
+    --yellow-color: #FBBF24;
 
 
 }
@@ -16,7 +17,7 @@
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
     cursor: default;
-    transition: all 0.3s ease;
+    transition: opacity 0.25s, color 0.3s, background-color 0.3s ease;
 }
 
 button {
@@ -56,12 +57,83 @@ body {
     cursor: default;
 }
 
+.top .tags{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    width: 100%;
+}
+
 .top .tag {
+    position: relative;
     font-size: 1.5rem;
-    font-weight: 300
+    font-weight: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    cursor: pointer;
+    grid-row: 1;
+}
+
+.top .tag.selected {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.top .tag:hover {
+    color:#4ADE80;
+}
+.top .tag.selected:hover {
+    color: inherit;
+}
+
+.top .tag[data-pos="0"] { grid-column: 1; justify-self: end; }
+.top .tag[data-pos="1"] { grid-column: 2; }
+.top .tag[data-pos="2"] { grid-column: 3; justify-self: start; }
+
+.session-indicator {
+    display: none;
+    position: absolute;
+    right: 100%;
+    margin-right: 0.4rem;
+    /* opacity: 1 !important; */
+}
+
+@keyframes blinking {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+body.session-running .tag.selected .session-indicator {
+    display: inline;
+    color: var(--green-color);
+    animation: blinking 1.85s infinite;
+}
+
+body.session-paused .tag.selected .session-indicator {
+    color: var(--yellow-color);
+    animation: none;
+}
+
+body:not(.session-running) .top .tags:hover .tag,
+body:not(.session-running) .top .tags:focus-within .tag {
+    opacity: 0.35;
+    pointer-events: auto;
+}
+
+body:not(.session-running) .top .tags:hover .tag.selected,
+body:not(.session-running) .top .tags:focus-within .tag.selected {
+    opacity: 1;
 }
 
 .session-running .tag {
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+}
+
+.session-running .tag.selected {
     opacity: 0.45;
 }
 
