@@ -162,7 +162,7 @@ function stopSession() {
     renderTime(remainingSeconds);
     renderControls();
     document.title = "Focus";
-    changeFavicon('./assets/focuslogo.svg');
+    changeFavicon('./assets/focuslogo48.png');
 }
 
 function stopSound() {
@@ -309,3 +309,9 @@ shortcutsButton.addEventListener("click", () => {
 renderTime(remainingSeconds);
 renderControls();
 applyOrder();
+
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js");
+    });
+}
