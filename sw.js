@@ -1,4 +1,4 @@
-const CACHE = "focus-timer-v2";
+const CACHE = "focus-timer-v3";
 const FILES = [
   "./",
   "./index.html",
