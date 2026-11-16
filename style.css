@@ -14,8 +14,6 @@
     --green-color: #4ADE80;
     --red-color: #FB7185;
     --yellow-color: #FBBF24;
-
-
 }
 
 * {
@@ -45,6 +43,32 @@ body {
     height: 100vh;
 }
 
+.modes {
+    display: flex;
+    gap: 1rem;
+    /* outline: 2px red solid; */
+    /* padding: 1rem 2rem; */
+    background-color: var(--secbg-color);
+    border-radius: 100%;
+    opacity: 1;
+}
+.modes:hover {
+    opacity: 1;
+}
+
+.modes button{
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    color: var(--fg-color);
+    background-color: var(--secbg-color);
+}
+
+.modes .active {
+    color: var(--secbg-color);
+    background-color: var(--green-color);
+}
+
 .top {
     display: flex;
     flex-direction: column;
@@ -65,6 +89,28 @@ body {
 .session-running .top .timer {
     font-size: 8.5rem;
     cursor: default;
+}
+
+.time-mode .top .timer {
+    font-size: 8.5rem;
+    cursor: default;
+}
+
+.time-mode .modes {
+    transform: scale(0.8);
+    background-color: var(--bg-color);
+    opacity: 0.65;
+}
+
+.time-mode .modes button:not(.active) {
+    background-color: var(--bg-color);
+}
+
+.time-mode .tag,
+.time-mode #sessionControls,
+.time-mode .duration-form,
+.time-mode #pauseHint {
+    display: none;
 }
 
 .top .tags{
@@ -212,6 +258,10 @@ body.session-running {
     background-color: var(--secbg-color);
 }
 
+body.time-mode {
+    background-color: var(--secbg-color);
+}
+
 #pauseHint {
     position: fixed;
     bottom: 2rem;
@@ -264,7 +314,7 @@ dialog {
     margin-top: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 1.8rem;
     font-size: 1.2rem;
 }
 
