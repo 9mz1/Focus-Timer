@@ -125,6 +125,7 @@ function finishSession() {
     endSound.volume = 1.0;
     endSound.loop = true;
     endSound.play();
+    endSound.play().catch(() => {});
     pauseHint.textContent = "Click anywhere or press press 'space' to stop the sound";
     pauseHint.hidden = false;
 }
@@ -139,6 +140,7 @@ function updateTimer() {
 }
 
 function startTimer() {
+    unlockAudio();
     if (configuredDuration <= 0) {
         return;
     }
@@ -173,6 +175,7 @@ function pauseTimer() {
 }
 
 function resumeTimer() {
+    unlockAudio();
     if (timerState !== "paused" || remainingSeconds <= 0) {
         return;
     }
@@ -204,6 +207,19 @@ function stopSound() {
     endSound.currentTime = 0;
     pauseHint.hidden = false;
     pauseHint.textContent = "Click on timer to change duration | Click on category to select";
+}
+
+function unlockAudio() {
+    endSound.muted = true;
+    endSound.play()
+        .then(() => {
+            endSound.pause();
+            endSound.currentTime = 0;
+            endSound.muted = false;
+        })
+        .catch(() => {
+            endSound.muted = false;
+        });
 }
 
 function setMode(mode) {
