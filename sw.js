@@ -1,4 +1,4 @@
-const CACHE = "focus-timer-v3";
+const CACHE = "focus-timer-v4";
 const FILES = [
   "./",
   "./index.html",
@@ -31,6 +31,12 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+    fetch(e.request, {cache: "no-cache"})
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });

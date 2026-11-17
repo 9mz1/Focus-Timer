@@ -194,7 +194,7 @@ function stopSession() {
     renderTime(remainingSeconds);
     renderControls();
     pauseHint.hidden = false;
-    pauseHint.textContent = "Click on timer to change duration | Hover over Category to select";
+    pauseHint.textContent = "Click on timer to change duration | Click on category to select";
     document.title = "Focus";
     changeFavicon('./assets/focuslogo48.png');
 }
@@ -203,7 +203,7 @@ function stopSound() {
     endSound.pause();
     endSound.currentTime = 0;
     pauseHint.hidden = false;
-    pauseHint.textContent = "Click on timer to change duration | Hover over Category to select";
+    pauseHint.textContent = "Click on timer to change duration | Click on category to select";
 }
 
 function setMode(mode) {
@@ -369,14 +369,3 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy));
-        return res;
-      })
-      .catch(() => caches.match(e.request))
-  );
-});
