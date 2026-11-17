@@ -424,3 +424,30 @@ dialog {
     display: inline-block;
   }
 }
+
+#sessionControls button,
+.duration-form button,
+.modes button,
+#shortcutsButton {
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 0.3s ease,
+        color 0.3s ease,
+        opacity 0.3s ease;
+}
+
+@media (hover: hover) {
+    #sessionControls button:hover,
+    .duration-form button:hover,
+    .modes button:hover,
+    #shortcutsButton:hover {
+        transform: scale(1.08);
+    }
+}
+
+#sessionControls button:active,
+.duration-form button:active,
+.modes button:active,
+#shortcutsButton:active {
+    transform: scale(1.04);
+}
