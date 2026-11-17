@@ -1,4 +1,4 @@
-const CACHE = "focus-timer-v4";
+const CACHE = "focus-timer-v5";
 const FILES = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const FILES = [
   "./assets/focuslogo48.png",
   "./assets/focuslogo48green.png",
   "./assets/focuslogo48yellow.png",
+  "./assets/icon-192-ios.png",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/Inter-Variable.ttf"
